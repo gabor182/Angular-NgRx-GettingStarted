@@ -1,3 +1,5 @@
+import { User } from '../user/user';
+
 export interface State {
-	users: any;
+	app: any;
 }
