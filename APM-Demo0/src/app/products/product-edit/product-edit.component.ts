@@ -6,6 +6,7 @@ import { ProductService } from '../product.service';
 import { GenericValidator } from '../../shared/generic-validator';
 import { NumberValidators } from '../../shared/number.validator';
 
+import { Observable, of } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
 /* NgRx */
@@ -21,7 +22,6 @@ import * as productActions from '../state/product.actions';
 export class ProductEditComponent implements OnInit, OnDestroy {
 	componentActive = true;
 	pageTitle = 'Product Edit';
-	errorMessage = '';
 	productForm: FormGroup;
 
 	product: Product | null;
@@ -30,6 +30,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 	displayMessage: { [key: string]: string } = {};
 	private validationMessages: { [key: string]: { [key: string]: string } };
 	private genericValidator: GenericValidator;
+	errorMessage$: Observable<string>;
 
 	constructor(private fb: FormBuilder,
 							private store: Store<fromProduct.State>,
@@ -73,6 +74,8 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 			.subscribe(
 				currentProduct => this.displayProduct(currentProduct)
 		);
+
+		this.errorMessage$ = this.store.pipe(select(fromProduct.getError), takeWhile(() => this.componentActive));
 
 		// Watch for value changes
 		this.productForm.valueChanges.subscribe(
@@ -145,16 +148,16 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 				const p = { ...this.product, ...this.productForm.value };
 
 				if (p.id === 0) {
-					this.productService.createProduct(p).subscribe(
-						product => this.store.dispatch(new productActions.SetCurrentProduct(product)),
-						(err: any) => this.errorMessage = err.error
-					);
+					// this.productService.createProduct(p).subscribe(
+					// 	product => this.store.dispatch(new productActions.SetCurrentProduct(product)),
+					// 	(err: any) => this.errorMessage = err.error
+					// );
 				} else {
 					this.store.dispatch(new productActions.UpdateProduct(p));
 				}
 			}
 		} else {
-			this.errorMessage = 'Please correct the validation errors.';
+			this.errorMessage$ = of('Please correct the validation errors.');
 		}
 	}
 
