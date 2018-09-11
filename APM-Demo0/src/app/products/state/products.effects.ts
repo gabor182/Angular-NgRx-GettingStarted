@@ -40,4 +40,14 @@ export class ProductEffects {
 			catchError(err => of(new productActions.DeleteProductFail(err)))
 		))
 	);
+
+	@Effect()
+	saveNewProduct = this.actions$.pipe(
+		ofType(productActions.ProductActionTypes.CreateProduct),
+		map((action: productActions.CreateProduct) => action.payload),
+		mergeMap((product: Product) => this.productService.createProduct(product).pipe(
+			map((savedProduct: Product) => new productActions.CreateProductSuccess(savedProduct)),
+			catchError(err => of(new productActions.CreateProductFail(err)))
+		))
+	);
 }

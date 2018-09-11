@@ -123,7 +123,22 @@ export function reducer(state = initialState, action: ProductActions): ProductSt
 			return {
 				...state,
 				products: cleanedProducts,
-				currentProductId: null
+				currentProductId: null,
+				error: ''
+			}
+		
+		case ProductActionTypes.CreateProductSuccess:
+			return {
+				...state,
+				products: [...state.products, action.payload],
+				currentProductId: null,
+				error: ''
+			}
+		
+		case ProductActionTypes.CreateProductFail:
+			return {
+				...state,
+				error: action.payload
 			}
 
 		default:
