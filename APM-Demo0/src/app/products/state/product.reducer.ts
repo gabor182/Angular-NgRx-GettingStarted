@@ -117,6 +117,15 @@ export function reducer(state = initialState, action: ProductActions): ProductSt
 				error: action.payload
 			}
 
+		case ProductActionTypes.DeleteProductSuccess:
+			const idx = state.products.findIndex(x => x.id === action.payload);
+			const cleanedProducts = [...state.products.slice(0, idx), ...state.products.slice(idx + 1)]
+			return {
+				...state,
+				products: cleanedProducts,
+				currentProductId: null
+			}
+
 		default:
 			return state;
 	}
